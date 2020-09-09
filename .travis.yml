@@ -3,4 +3,4 @@ go:
   - 1.x
 
 script:
-  - make all
+  - make dev

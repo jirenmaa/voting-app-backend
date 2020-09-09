@@ -1,10 +1,14 @@
-package models
+package poll
 
-import "time"
+import (
+	"time"
+
+	"github.com/Mockturnal/voting-app-backend/api/user"
+)
 
 type PollOption struct {
-	Option string `json:"option"`
-	Users  []User `json:"users"`
+	Option string      `json:"option"`
+	Users  []user.User `json:"users"`
 }
 
 type Poll struct {

@@ -34,7 +34,9 @@ func Ping(ctx context.Context) error {
 
 func Migrate(models ...interface{}) error {
 	for _, model := range models {
-		err := db.Model(model).CreateTable(&orm.CreateTableOptions{})
+		err := db.Model(model).CreateTable(&orm.CreateTableOptions{
+			IfNotExists: true,
+		})
 		if err != nil {
 			return err
 		}
