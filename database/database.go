@@ -11,6 +11,10 @@ import (
 
 var db *pg.DB
 
+func GetConnection() *pg.DB {
+	return db
+}
+
 func Init() {
 	db = pg.Connect(&pg.Options{
 		Addr:     fmt.Sprintf("%s:%s", os.Getenv("POSTGRESQL_HOST"), os.Getenv("POSTGRESQL_PORT")),
