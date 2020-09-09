@@ -5,10 +5,14 @@ import (
 
 	"github.com/Mockturnal/voting-app-backend/handlers"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func Init() *echo.Echo {
 	e := echo.New()
+
+	e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome To Mockturnal API")

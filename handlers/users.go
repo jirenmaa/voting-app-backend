@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	helper "github.com/Mockturnal/voting-app-backend/helpers"
 
@@ -13,10 +15,13 @@ import (
 
 func GetUsers(c echo.Context) error {
 	db := database.GetConnection()
-	data := new(models.User)
-	err := db.Model(data).Select()
+	data := new([]models.User)
+	if err := db.Model(data).Column("username", "email", "created_at", "updated_at").Select(); err != nil {
+		fmt.Print(data)
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
 
-	return c.JSON(http.StatusOK, err)
+	return c.JSON(http.StatusOK, data)
 }
 
 func Register(c echo.Context) error {
@@ -32,10 +37,16 @@ func Register(c echo.Context) error {
 	data.Username = username
 	data.Email = email
 	data.Password = hash
-	err := v.Struct(data)
-	if err != nil {
-		return c.JSON(http.StatusNoContent, err.Error())
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
+	if err := v.Struct(data); err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	db.Model(data).Insert()
-	return c.JSON(http.StatusOK, data)
+
+	result, err := db.Model(data).Insert()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, result)
 }
