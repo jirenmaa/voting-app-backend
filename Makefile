@@ -30,5 +30,9 @@ build-all: ## Compile the go files for multiple OS
 run-server: ## Run the server
 	$(OUTFILE)
 
+.PHONY: dev
+dev: ## Runs the development server
+	go run $(MAIN)
+
 all: ## Runs all the main commands
 	make build && make run-server
