@@ -6,17 +6,14 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/Mockturnal/voting-app-backend/api/user"
+	// "time"
+
 	"github.com/Mockturnal/voting-app-backend/database"
+	"github.com/Mockturnal/voting-app-backend/helpers"
+
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo"
 )
-
-// TempData godoc
-// @description keeping temporary data
-type TempData struct {
-	option string
-	user   []interface{}
-}
 
 // GetPolls godoc
 // @Summary Get all Polls
@@ -44,36 +41,56 @@ func GetPolls(c echo.Context) error {
 // @Failure 500 {object} err.Error
 // @Router /polls [post]
 func CreatePolls(c echo.Context) error {
-	res := echo.Map{}
-	if err := c.Bind(&res); err != nil {
-		return err
-	}
-
 	db := database.GetConnection()
+	request := helpers.GetJSON(c)
+
 	data := new(Poll)
 	dataPoll := []PollOption{}
 
-	for i := 1; i < 3; i++ {
-		optName := fmt.Sprintf("Test %d", i)
+	// for i := 1; i < 3; i++ {
+	// 	optName := fmt.Sprintf("Test %d", i)
+	// 	temp := PollOption{
+	// 		Option: optName,
+	// 		Users:  []user.User{},
+	// 	}
+
+	// 	dataPoll = append(dataPoll, temp)
+	// }
+
+	var (
+		_optName = ""
+	)
+
+	for _, value := range request["Options"].([]interface{}) {
+		for _, n := range value.(map[string]interface{}) {
+			if reflect.TypeOf(n).Name() == "string" {
+				_optName = n.(string)
+			}
+		}
+
 		temp := PollOption{
-			Option: optName,
-			Users:  []user.User{},
+			Option: _optName,
 		}
 
 		dataPoll = append(dataPoll, temp)
 	}
 
-	data.Title = res["Title"].(string)
+	var v = validator.New()
+
+	data.Title = request["Title"].(string)
 	data.CreatedAt = time.Now()
 	data.UpdatedAt = time.Now()
 	data.Options = dataPoll
 
-	result, err := db.Model(data).Insert()
-	if err != nil && result != nil {
+	if err := v.Struct(data); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	_, err := db.Model(data).Insert()
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	fmt.Println(reflect.TypeOf(dataPoll))
 	return c.JSON(http.StatusOK, data)
-	// return c.JSON(http.StatusOK, res)
+	// return c.JSON(http.StatusOK, dataPoll)
 }
