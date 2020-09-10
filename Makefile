@@ -19,10 +19,12 @@ clean: ## Deletes all compiled / executable files
 
 .PHONY: build
 build: ## Compile the go files
-	go build -o $(OUTFILE) $(MAIN_SRC)
+	@echo "Building go files"
+	@go build -o $(OUTFILE) $(MAIN_SRC)
 
 .PHONY: build-all
 build-all: ## Compile the go files for multiple OS
+	@echo "Building go files for multiple OS"
 	GOOS=linux GOARCH=arm go build -o bin/server-linux-arm $(MAIN_SRC)
 	GOOS=linux GOARCH=arm64 go build -o bin/server-linux-arm64 $(MAIN_SRC)
 	GOOS=linux GOARCH=386 go build -o bin/server-linux-386 $(MAIN_SRC)
@@ -31,11 +33,11 @@ build-all: ## Compile the go files for multiple OS
 
 .PHONY: run
 run: ## Runs the server
-	go run $(MAIN_SRC)
+	@APP_ENV=development go run $(MAIN_SRC)
 
 .PHONY: start
 start: ## Runs the compiled server
-	$(OUTFILE)
+	@APP_ENV=production $(OUTFILE)
 
 .PHONY: all
 all: build start ## Build and Run the server

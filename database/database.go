@@ -2,26 +2,23 @@ package database
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 )
 
 var db *pg.DB
+var ctx = context.Background()
+
+type ConnectionOptions struct {
+}
 
 func GetConnection() *pg.DB {
 	return db
 }
 
-func Init() {
-	db = pg.Connect(&pg.Options{
-		Addr:     fmt.Sprintf("%s:%s", os.Getenv("POSTGRESQL_HOST"), os.Getenv("POSTGRESQL_PORT")),
-		User:     os.Getenv("POSTGRESQL_USER"),
-		Password: os.Getenv("POSTGRESQL_PASSWORD"),
-		Database: os.Getenv("POSTGRESQL_DATABASE"),
-	})
+func CreateConnection(options *pg.Options) {
+	db = pg.Connect(options)
 }
 
 func Ping(ctx context.Context) error {

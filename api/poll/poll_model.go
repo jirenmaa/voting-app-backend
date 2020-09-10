@@ -12,7 +12,7 @@ type PollOption struct {
 type Poll struct {
 	tableName struct{} `pg:"polls"`
 
-	ID      uint16       `pg:",pk" json:"id"`
+	ID      uint64       `pg:",pk" json:"id"`
 	Title   string       `json:"title"`
 	Options []PollOption `json:"options"`
 

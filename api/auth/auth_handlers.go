@@ -1,24 +1,30 @@
 package auth
 
 import (
+	"context"
 	"net/http"
-	"os"
+	"strconv"
 	"time"
 
 	"github.com/Mockturnal/voting-app-backend/api/user"
 	"github.com/Mockturnal/voting-app-backend/auth/jwt"
+	"github.com/Mockturnal/voting-app-backend/config"
 	"github.com/Mockturnal/voting-app-backend/database"
 	"github.com/Mockturnal/voting-app-backend/helpers"
 	gojwt "github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator"
+	"github.com/go-redis/redis"
 	"github.com/labstack/echo"
 )
+
+var ctx = context.TODO()
 
 func Login(c echo.Context) error {
 	var (
 		v        = validator.New()
 		email    = c.FormValue("email")
 		password = c.FormValue("password")
+		cfg      = config.GetConfig()
 	)
 
 	db := database.GetConnection()
@@ -48,13 +54,13 @@ func Login(c echo.Context) error {
 	at := &jwt.Token{
 		JwtAlgo:   gojwt.SigningMethodHS256,
 		JwtClaim:  jwt.NewClaim(user.ID, time.Now().Add(time.Minute*10).Unix()),
-		JwtSecret: os.Getenv("ACCESS_TOKEN_SECRET"),
+		JwtSecret: cfg.Server.AccessTokenSecret,
 	}
 
 	rt := &jwt.Token{
 		JwtAlgo:   gojwt.SigningMethodHS256,
 		JwtClaim:  jwt.NewClaim(user.ID, time.Now().Add(time.Hour*24*7).Unix()),
-		JwtSecret: os.Getenv("REFRESH_TOKEN_SECRET"),
+		JwtSecret: cfg.Server.RefreshTokenSecret,
 	}
 
 	accessToken, err := at.GetToken()
@@ -65,6 +71,17 @@ func Login(c echo.Context) error {
 	refreshToken, err := rt.GetToken()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	str := strconv.FormatUint(user.ID, 10)
+	_err := rdb.Set(str, refreshToken, 0).Err()
+	if _err != nil {
+		return c.JSON(http.StatusInternalServerError, _err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{

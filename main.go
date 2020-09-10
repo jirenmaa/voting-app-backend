@@ -2,23 +2,28 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/Mockturnal/voting-app-backend/api/auth"
 	"github.com/Mockturnal/voting-app-backend/api/poll"
 	"github.com/Mockturnal/voting-app-backend/api/user"
+	"github.com/Mockturnal/voting-app-backend/config"
 	"github.com/Mockturnal/voting-app-backend/database"
-	"github.com/joho/godotenv"
+	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		panic(err)
-	}
-
-	database.Init()
+	config.LoadConfig()
+	cfg := config.GetConfig()
+	database.CreateConnection(&pg.Options{
+		Addr:     cfg.Database.Addr,
+		User:     cfg.Database.User,
+		Password: cfg.Database.Password,
+		Database: cfg.Database.Db,
+	})
 
 	if err := database.Ping(context.TODO()); err != nil {
 		panic(err)
@@ -44,5 +49,9 @@ func main() {
 	poll.NewPollRoutes(pollsGroup)
 	auth.NewAuthRoutes(authGroup)
 
-	e.Logger.Fatal(e.Start(":5000"))
+	addr := fmt.Sprintf("%s:%s",
+		cfg.Server.Host,
+		cfg.Server.Port)
+
+	e.Logger.Fatal(e.Start(addr))
 }

@@ -1,0 +1,29 @@
+development:
+  server:
+    host: localhost
+    port: 5000
+    access_token_secret: GOFy2cTl|{q0VUU
+    refresh_token_secret: vS:pRJboR$!Ho'2
+  database:
+    addr: "localhost:5432"
+    user: postgres
+    password: postgres
+    db: votingapp
+  redis:
+    host: localhost
+    port: 6379
+
+testing:
+  server:
+    host: localhost
+    port: 5001
+    access_token_secret: GOFy2cTl|{q0VUU
+    refresh_token_secret: vS:pRJboR$!Ho'2
+  database:
+    addr: "localhost:5432"
+    user: postgres
+    password: postgres
+    db: votingapptest
+  redis:
+    host: localhost
+    port: 6379
