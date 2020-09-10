@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/Mockturnal/voting-app-backend/api/user"
@@ -11,8 +13,11 @@ import (
 	"github.com/Mockturnal/voting-app-backend/helpers"
 	gojwt "github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator"
+	"github.com/go-redis/redis"
 	"github.com/labstack/echo"
 )
+
+var ctx = context.TODO()
 
 func Login(c echo.Context) error {
 	var (
@@ -65,6 +70,17 @@ func Login(c echo.Context) error {
 	refreshToken, err := rt.GetToken()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	str := strconv.FormatUint(user.ID, 10)
+	_err := rdb.Set(str, refreshToken, 0).Err()
+	if _err != nil {
+		return c.JSON(http.StatusInternalServerError, _err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{

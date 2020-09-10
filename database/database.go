@@ -10,6 +10,7 @@ import (
 )
 
 var db *pg.DB
+var ctx = context.Background()
 
 func GetConnection() *pg.DB {
 	return db
