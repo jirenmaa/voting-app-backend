@@ -5,6 +5,8 @@ import (
 	"github.com/labstack/echo"
 )
 
+// NewPollRoutes godoc
+// @description poll routes container
 func NewPollRoutes(g *echo.Group) {
 	// g.GET("", GetPolls, middleware.JWTWithConfig(middleware.JWTConfig{
 	// 	SigningKey:    []byte(os.Getenv("ACCESS_TOKEN_SECRET")),
@@ -12,4 +14,5 @@ func NewPollRoutes(g *echo.Group) {
 	// }))
 
 	g.GET("", GetPolls)
+	g.POST("", CreatePolls)
 }
