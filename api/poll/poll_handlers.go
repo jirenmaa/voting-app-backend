@@ -2,9 +2,7 @@ package poll
 
 import (
 	"fmt"
-	"time"
 	"net/http"
-	// "reflect"
 
 	"github.com/Mockturnal/voting-app-backend/database"
 	"github.com/labstack/echo"
