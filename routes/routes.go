@@ -22,8 +22,8 @@ func Init() *echo.Echo {
 	e.GET("/users", handlers.GetUsers)
 	e.POST("/users/register", handlers.Register)
 
-	// e.POST("/login", Login)
-	// e.POST("/register", SignUp)
+	e.GET("/polls", handlers.GetPolls)
+	e.POST("/polls", handlers.CreatePolls)
 
 	return e
 }
