@@ -3,12 +3,12 @@ package auth
 import (
 	"context"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/Mockturnal/voting-app-backend/api/user"
 	"github.com/Mockturnal/voting-app-backend/auth/jwt"
+	"github.com/Mockturnal/voting-app-backend/config"
 	"github.com/Mockturnal/voting-app-backend/database"
 	"github.com/Mockturnal/voting-app-backend/helpers"
 	gojwt "github.com/dgrijalva/jwt-go"
@@ -24,6 +24,7 @@ func Login(c echo.Context) error {
 		v        = validator.New()
 		email    = c.FormValue("email")
 		password = c.FormValue("password")
+		cfg      = config.GetConfig()
 	)
 
 	db := database.GetConnection()
@@ -53,13 +54,13 @@ func Login(c echo.Context) error {
 	at := &jwt.Token{
 		JwtAlgo:   gojwt.SigningMethodHS256,
 		JwtClaim:  jwt.NewClaim(user.ID, time.Now().Add(time.Minute*10).Unix()),
-		JwtSecret: os.Getenv("ACCESS_TOKEN_SECRET"),
+		JwtSecret: cfg.Server.AccessTokenSecret,
 	}
 
 	rt := &jwt.Token{
 		JwtAlgo:   gojwt.SigningMethodHS256,
 		JwtClaim:  jwt.NewClaim(user.ID, time.Now().Add(time.Hour*24*7).Unix()),
-		JwtSecret: os.Getenv("REFRESH_TOKEN_SECRET"),
+		JwtSecret: cfg.Server.RefreshTokenSecret,
 	}
 
 	accessToken, err := at.GetToken()
