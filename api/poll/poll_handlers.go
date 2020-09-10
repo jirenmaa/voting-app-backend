@@ -2,8 +2,11 @@ package poll
 
 import (
 	"fmt"
+	"time"
 	"net/http"
+	"reflect"
 
+	"github.com/Mockturnal/voting-app-backend/api/user"
 	"github.com/Mockturnal/voting-app-backend/database"
 	"github.com/labstack/echo"
 )
@@ -12,7 +15,7 @@ import (
 // @description keeping temporary data
 type TempData struct {
 	option string
-	user []interface{}
+	user   []interface{}
 }
 
 // GetPolls godoc
@@ -46,5 +49,31 @@ func CreatePolls(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, res)
+	db := database.GetConnection()
+	data := new(Poll)
+	dataPoll := []PollOption{}
+
+	for i := 1; i < 3; i++ {
+		optName := fmt.Sprintf("Test %d", i)
+		temp := PollOption{
+			Option: optName,
+			Users:  []user.User{},
+		}
+
+		dataPoll = append(dataPoll, temp)
+	}
+
+	data.Title = res["Title"].(string)
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
+	data.Options = dataPoll
+
+	result, err := db.Model(data).Insert()
+	if err != nil && result != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	fmt.Println(reflect.TypeOf(dataPoll))
+	return c.JSON(http.StatusOK, data)
+	// return c.JSON(http.StatusOK, res)
 }
