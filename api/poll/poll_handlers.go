@@ -1,17 +1,16 @@
-package handlers
+package poll
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/Mockturnal/voting-app-backend/database"
-	"github.com/Mockturnal/voting-app-backend/models"
 	"github.com/labstack/echo"
 )
 
 func GetPolls(c echo.Context) error {
 	db := database.GetConnection()
-	data := new([]models.Poll)
+	data := new([]Poll)
 
 	if err := db.Model(data).Column("id", "title", "options", "created_at", "updated_at").Select(); err != nil {
 		fmt.Print(data)

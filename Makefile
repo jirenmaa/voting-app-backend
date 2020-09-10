@@ -1,4 +1,4 @@
-MAIN := main.go
+MAIN_SRC := main.go
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
 OUTFILE := bin/server-windows-386
@@ -13,26 +13,29 @@ help: ## Displays all the available commands
 
 .DEFAULT_GOAL := help
 
+.PHONY: clean
+clean: ## Deletes all compiled / executable files
+	@find bin -type f -not -name '.gitkeep' -print0 | xargs -0 rm --
+
 .PHONY: build
 build: ## Compile the go files
-	go build -o $(OUTFILE) $(MAIN)
+	go build -o $(OUTFILE) $(MAIN_SRC)
 
 .PHONY: build-all
 build-all: ## Compile the go files for multiple OS
-	GOOS=linux GOARCH=arm go build -o bin/server-linux-arm $(MAIN)
-	GOOS=linux GOARCH=arm64 go build -o bin/server-linux-arm64 $(MAIN)
-	GOOS=linux GOARCH=386 go build -o bin/server-linux-386 $(MAIN)
-	GOOS=freebsd GOARCH=386 go build -o bin/server-freebsd-386 $(MAIN)
-	GOOS=windows GOARCH=386 go build -o bin/server-windows-386 $(MAIN)
+	GOOS=linux GOARCH=arm go build -o bin/server-linux-arm $(MAIN_SRC)
+	GOOS=linux GOARCH=arm64 go build -o bin/server-linux-arm64 $(MAIN_SRC)
+	GOOS=linux GOARCH=386 go build -o bin/server-linux-386 $(MAIN_SRC)
+	GOOS=freebsd GOARCH=386 go build -o bin/server-freebsd-386 $(MAIN_SRC)
+	GOOS=windows GOARCH=386 go build -o bin/server-windows-386 $(MAIN_SRC)
 
+.PHONY: run
+run: ## Runs the server
+	go run $(MAIN_SRC)
 
-.PHONY: run-server
-run-server: ## Run the server
+.PHONY: start
+start: ## Runs the compiled server
 	$(OUTFILE)
 
-.PHONY: dev
-dev: ## Runs the development server
-	go run $(MAIN)
-
-all: ## Runs all the main commands
-	make build && make run-server
+.PHONY: all
+all: build start ## Build and Run the server

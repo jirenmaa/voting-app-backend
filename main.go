@@ -2,11 +2,15 @@ package main
 
 import (
 	"context"
+	"net/http"
 
+	"github.com/Mockturnal/voting-app-backend/api/auth"
+	"github.com/Mockturnal/voting-app-backend/api/poll"
+	"github.com/Mockturnal/voting-app-backend/api/user"
 	"github.com/Mockturnal/voting-app-backend/database"
-	"github.com/Mockturnal/voting-app-backend/models"
-	"github.com/Mockturnal/voting-app-backend/routes"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func main() {
@@ -15,13 +19,30 @@ func main() {
 	}
 
 	database.Init()
+
 	if err := database.Ping(context.TODO()); err != nil {
 		panic(err)
 	}
 
-	database.Migrate(&models.User{}, &models.Poll{})
+	if err := database.Migrate(&user.User{}, &poll.Poll{}); err != nil {
+		panic(err)
+	}
 
-	router := routes.Init()
+	e := echo.New()
 
-	router.Logger.Fatal(router.Start(":5000"))
+	e.Use(middleware.Logger())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
+
+	usersGroup := e.Group("/users")
+	pollsGroup := e.Group("/polls")
+	authGroup := e.Group("/auth")
+
+	user.NewUserRoutes(usersGroup)
+	poll.NewPollRoutes(pollsGroup)
+	auth.NewAuthRoutes(authGroup)
+
+	e.Logger.Fatal(e.Start(":5000"))
 }

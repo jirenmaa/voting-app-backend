@@ -1,6 +1,8 @@
-package models
+package user
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	tableName struct{} `pg:"users"`
