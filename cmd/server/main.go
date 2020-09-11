@@ -55,12 +55,19 @@ func main() {
 	jwtAuthService := jwt.NewJWTService()
 	authController := auth.NewAuthService(conn.DB, jwtAuthService)
 	userController := user.NewUserService(conn.DB)
+	pollController := poll.NewPollService(conn.DB)
 
 	r := gin.Default()
 
 	users := r.Group("/users")
 	{
 		users.GET("/", userController.GetUsers)
+	}
+
+	polls := r.Group("/polls")
+	{
+		polls.GET("/", pollController.GetPolls)
+		polls.POST("/", pollController.CreatePolls)
 	}
 
 	auth := r.Group("/auth")
