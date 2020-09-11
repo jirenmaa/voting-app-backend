@@ -122,7 +122,7 @@ func (c *Services) Register(ctx *gin.Context) {
 	})
 }
 
-// @Description Register endpoint that makes a new user
+// @Description Verify's the user auth token and returns the user's data
 // @Accept json
 // @Produce json
 // @Success 200 {object} user.User
