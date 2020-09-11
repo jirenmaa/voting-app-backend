@@ -6,6 +6,7 @@ import (
 
 	"github.com/Mockturnal/voting-app-backend/cmd/server/internal/user"
 	"github.com/Mockturnal/voting-app-backend/pkg/bcrypt"
+	"github.com/Mockturnal/voting-app-backend/pkg/cache"
 	"github.com/Mockturnal/voting-app-backend/pkg/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg/v10"
@@ -18,12 +19,14 @@ type AuthController interface {
 
 type AuthService struct {
 	Db         *pg.DB
+	Cache      *cache.Redis
 	JWTService jwt.JWT
 }
 
-func NewAuthService(db *pg.DB, jwtService jwt.JWT) AuthController {
+func NewAuthService(db *pg.DB, cache *cache.Redis, jwtService jwt.JWT) AuthController {
 	return &AuthService{
 		Db:         db,
+		Cache:      cache,
 		JWTService: jwtService,
 	}
 }

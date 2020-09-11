@@ -3,11 +3,13 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/Mockturnal/voting-app-backend/cmd/server/docs"
 	"github.com/Mockturnal/voting-app-backend/cmd/server/internal/auth"
 	"github.com/Mockturnal/voting-app-backend/cmd/server/internal/poll"
 	"github.com/Mockturnal/voting-app-backend/cmd/server/internal/user"
+	"github.com/Mockturnal/voting-app-backend/pkg/cache"
 	"github.com/Mockturnal/voting-app-backend/pkg/database"
 	"github.com/Mockturnal/voting-app-backend/pkg/jwt"
 	"github.com/gin-gonic/gin"
@@ -53,7 +55,8 @@ func main() {
 	}
 
 	jwtAuthService := jwt.NewJWTService()
-	authController := auth.NewAuthService(conn.DB, jwtAuthService)
+	redisService := cache.NewRedisCache(os.Getenv("REDIS_ADDR"), 0, 2*time.Hour)
+	authController := auth.NewAuthService(conn.DB, &redisService, jwtAuthService)
 	userController := user.NewUserService(conn.DB)
 
 	r := gin.Default()
