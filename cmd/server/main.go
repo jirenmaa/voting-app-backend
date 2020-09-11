@@ -64,6 +64,7 @@ func main() {
 	users := r.Group("/users")
 	{
 		users.GET("/", userController.GetUsers)
+		users.DELETE("/:id", userController.DelUsers)
 	}
 
 	auth := r.Group("/auth")

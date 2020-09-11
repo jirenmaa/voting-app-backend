@@ -9,6 +9,7 @@ import (
 
 type UserController interface {
 	GetUsers(ctx *gin.Context)
+	DelUsers(ctx *gin.Context)
 }
 
 type UserServices struct {
@@ -38,4 +39,19 @@ func (u *UserServices) GetUsers(ctx *gin.Context) {
 		"message": "get users success",
 		"data":    data,
 	})
+}
+
+func (u *UserServices) DelUsers(ctx *gin.Context) {
+	ID := ctx.Param("id")
+	data := new([]User)
+	if _, err := u.Db.Model(data).Where("id = ?", ID).Delete(); err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"message": "del users success",
+		"data":    data,
+	})
+
 }
