@@ -79,6 +79,7 @@ func main() {
 	{
 		auth.POST("/login", authController.Login)
 		auth.POST("/register", authController.Register)
+		auth.GET("/verify", authController.Verify)
 	}
 
 	swaggerURL := ginSwagger.URL("http://localhost:5000/swagger/doc.json")

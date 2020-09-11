@@ -3,6 +3,30 @@ definitions:
   gin.H:
     additionalProperties: true
     type: object
+  poll.Poll:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      options:
+        items:
+          $ref: '#/definitions/poll.PollOption'
+        type: array
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  poll.PollOption:
+    properties:
+      option:
+        type: string
+      users:
+        items:
+          type: object
+        type: array
+    type: object
   user.User:
     properties:
       createdAt:
@@ -52,6 +76,57 @@ paths:
             $ref: '#/definitions/gin.H'
         "409":
           description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+  /auth/verify:
+    get:
+      consumes:
+      - application/json
+      description: Verify's the user auth token and returns the user's data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+  /polls:
+    get:
+      consumes:
+      - application/json
+      description: Poll list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/poll.Poll'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+    post:
+      consumes:
+      - application/json
+      description: Create poll
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/poll.Poll'
+            type: array
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/gin.H'
   /users:
