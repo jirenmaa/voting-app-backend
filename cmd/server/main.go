@@ -56,7 +56,7 @@ func main() {
 
 	jwtAuthService := jwt.NewJWTService()
 	redisService := cache.NewRedisCache(os.Getenv("REDIS_ADDR"), 0, 2*time.Hour)
-	authController := auth.NewAuthService(conn.DB, &redisService, jwtAuthService)
+	authController := auth.NewAuthService(conn.DB, redisService, jwtAuthService)
 	userController := user.NewUserService(conn.DB)
 
 	r := gin.Default()

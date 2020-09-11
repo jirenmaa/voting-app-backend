@@ -19,11 +19,11 @@ type AuthController interface {
 
 type AuthService struct {
 	Db         *pg.DB
-	Cache      *cache.Redis
+	Cache      cache.Redis
 	JWTService jwt.JWT
 }
 
-func NewAuthService(db *pg.DB, cache *cache.Redis, jwtService jwt.JWT) AuthController {
+func NewAuthService(db *pg.DB, cache cache.Redis, jwtService jwt.JWT) AuthController {
 	return &AuthService{
 		Db:         db,
 		Cache:      cache,
