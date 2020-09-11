@@ -57,6 +57,7 @@ func main() {
 	redisService := cache.NewRedisCache(os.Getenv("REDIS_ADDR"), 0, 2*time.Hour)
 	authController := auth.NewAuthService(conn.DB, redisService, jwtAuthService)
 	userController := user.NewUserService(conn.DB)
+	pollController := poll.NewPollService(conn.DB)
 
 	r := gin.Default()
 
@@ -64,6 +65,12 @@ func main() {
 	{
 		users.GET("/", userController.GetUsers)
 		users.DELETE("/:id", userController.DelUsers)
+	}
+
+	polls := r.Group("/polls")
+	{
+		polls.GET("/", pollController.GetPolls)
+		polls.POST("/", pollController.CreatePolls)
 	}
 
 	auth := r.Group("/auth")
