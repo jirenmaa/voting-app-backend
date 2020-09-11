@@ -15,6 +15,7 @@ import (
 type AuthController interface {
 	Login(c *gin.Context)
 	Register(c *gin.Context)
+	Validate(c *gin.Context)
 }
 
 type AuthService struct {
@@ -117,4 +118,8 @@ func (c *AuthService) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Successfully registered a new account!",
 	})
+}
+
+func (c *AuthService) Validate(ctx *gin.Context) {
+
 }

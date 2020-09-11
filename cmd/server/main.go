@@ -45,7 +45,6 @@ func main() {
 		Password: os.Getenv("POSTGRESQL_PASSWORD"),
 		Database: os.Getenv("POSTGRESQL_DATABASE"),
 	})
-	defer conn.Close()
 	if err != nil {
 		panic(err)
 	}
