@@ -126,7 +126,7 @@ func (c *Services) Register(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} user.User
-// @Failure 409 {object} gin.H
+// @Failure 401 {object} gin.H
 // @Router /auth/verify [get]
 func (c *Services) Verify(ctx *gin.Context) {
 	header := ctx.GetHeader("Authorization")
