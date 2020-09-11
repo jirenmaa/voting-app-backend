@@ -72,7 +72,6 @@ func main() {
 		polls.GET("/", pollController.GetPolls)
 		polls.POST("/", pollController.CreatePoll)
 		polls.DELETE("/", pollController.DeletePoll)
-		polls.PUT("/", pollController.UpdatePoll)
 	}
 
 	auth := r.Group("/auth")

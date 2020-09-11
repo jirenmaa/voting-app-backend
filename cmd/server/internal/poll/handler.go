@@ -13,7 +13,6 @@ type PollController interface {
 	GetPolls(ctx *gin.Context)
 	CreatePoll(ctx *gin.Context)
 	DeletePoll(ctx *gin.Context)
-	UpdatePoll(ctx *gin.Context)
 }
 
 // PollServices ...
@@ -76,38 +75,6 @@ func (u *PollServices) CreatePoll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "create poll success",
 		"data":    poll,
-	})
-}
-
-// @Description Update poll
-// @Accept json
-// @Produce json
-// @Success 200 {object} []Poll
-// @Failure 500 {object} gin.H
-// @Router /polls [put]
-func (u *PollServices) UpdatePoll(ctx *gin.Context) {
-	var request Poll
-	id, _ := strconv.Atoi(ctx.Query("id"))
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	poll := Poll{
-		Title:     request.Title,
-		Options:   request.Options,
-		UpdatedAt: time.Now(),
-	}
-
-	result, err := u.Db.Model(&poll).Where("id = ?", id).Update()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "update poll success",
-		"data":    result,
 	})
 }
 
